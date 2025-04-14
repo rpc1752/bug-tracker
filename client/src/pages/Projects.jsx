@@ -1,7 +1,21 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../api/api";
+import {
+  PlusIcon,
+  MagnifyingGlassIcon,
+  FolderPlusIcon,
+  FolderIcon,
+  ClockIcon,
+  HashtagIcon,
+} from "@heroicons/react/24/outline";
+import LoadingSpinner from "../components/LoadingSpinner";
+import Alert from "../components/Alert";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import EmptyState from "../components/EmptyState";
+import Badge from "../components/Badge";
 
 function Projects() {
   const navigate = useNavigate();
@@ -27,17 +41,26 @@ function Projects() {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <LoadingSpinner text="Loading projects..." />;
   }
 
   if (isError) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg text-red-600">Error loading projects</div>
+      <div className="flex items-center justify-center h-64">
+        <Alert
+          variant="error"
+          title="Error Loading Projects"
+          message="There was an error loading your projects."
+          actions={
+            <Button
+              variant="outline"
+              onClick={() => window.location.reload()}
+              className="mt-2"
+            >
+              Try Again
+            </Button>
+          }
+        />
       </div>
     );
   }
@@ -47,48 +70,98 @@ function Projects() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Projects</h1>
-        <Link
-          to="/projects/new"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
+        <Button to="/projects/new" variant="primary" icon={FolderPlusIcon}>
           New Project
-        </Link>
+        </Button>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search projects..."
-        className="w-full p-2 mb-4 border rounded"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          placeholder="Search projects..."
+          className="pl-10 input focus:ring-2 focus:ring-primary-500"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
 
       {filteredProjects?.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredProjects.map((project) => (
-            <Link
+            <Card
               key={project._id}
-              to={`/projects/${project._id}`}
-              className="block p-4 border rounded hover:shadow-lg transition-shadow"
+              as="div"
+              hover={true}
+              className="flex flex-col h-full"
+              onClick={() => navigate(`/projects/${project._id}`)}
             >
-              <h2 className="text-xl font-semibold mb-2">{project.name}</h2>
-              <p className="text-gray-600">{project.description}</p>
-              <div className="mt-4 flex justify-between items-center">
-                <span className="text-sm text-gray-500">
-                  {project.issues?.length || 0} issues
-                </span>
-                <span className="text-sm text-gray-500">
-                  {new Date(project.createdAt).toLocaleDateString()}
-                </span>
+              <div className="flex items-center mb-4">
+                <div className="h-10 w-10 rounded-lg bg-primary-100 flex items-center justify-center text-primary-600">
+                  <FolderIcon className="h-6 w-6" />
+                </div>
+                <div className="ml-3 flex-grow">
+                  <h2 className="text-lg font-semibold text-gray-900 leading-tight">
+                    {project.name}
+                  </h2>
+                  {project.status && (
+                    <Badge
+                      variant={
+                        project.status === "active"
+                          ? "success"
+                          : project.status === "completed"
+                          ? "info"
+                          : "warning"
+                      }
+                      className="mt-1"
+                      size="xs"
+                      dot
+                    >
+                      {project.status === "active"
+                        ? "Active"
+                        : project.status === "completed"
+                        ? "Completed"
+                        : "Draft"}
+                    </Badge>
+                  )}
+                </div>
               </div>
-            </Link>
+              <p className="text-gray-600 flex-grow mb-4">
+                {project.description}
+              </p>
+              <div className="flex justify-between items-center text-sm text-gray-500 pt-4 border-t border-gray-100">
+                <div className="flex items-center">
+                  <HashtagIcon className="h-4 w-4 mr-1 text-gray-400" />
+                  <span>{project.issues?.length || 0} issues</span>
+                </div>
+                <div className="flex items-center">
+                  <ClockIcon className="h-4 w-4 mr-1 text-gray-400" />
+                  <span>
+                    {new Date(project.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            </Card>
           ))}
         </div>
       ) : (
-        <div className="text-center text-gray-500 mt-8">No projects found</div>
+        <EmptyState
+          icon={FolderIcon}
+          title="No projects found"
+          description={
+            searchTerm
+              ? `No projects matching "${searchTerm}"`
+              : "You haven't created any projects yet. Start by creating your first project."
+          }
+          buttonText="Create First Project"
+          buttonIcon={PlusIcon}
+          buttonTo="/projects/new"
+        />
       )}
     </div>
   );
