@@ -43,15 +43,15 @@ export default function Settings() {
                     onClick={() => setActiveTab(item.id)}
                     className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
                       activeTab === item.id
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-gray-700 hover:bg-gray-50"
+                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300"
+                        : "text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
                     }`}
                   >
                     <item.icon
                       className={`mr-3 h-5 w-5 ${
                         activeTab === item.id
-                          ? "text-primary-500"
-                          : "text-gray-400"
+                          ? "text-primary-500 dark:text-primary-400"
+                          : "text-[var(--text-tertiary)]"
                       }`}
                     />
                     {item.name}

@@ -48,7 +48,7 @@ export default function Layout() {
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
       {/* Mobile sidebar backdrop */}
       <div
-        className={`fixed inset-0 bg-gray-900 bg-opacity-70 z-40 backdrop-blur-sm transition-opacity md:hidden ${
+        className={`fixed inset-0 bg-black/70 z-40 backdrop-blur-sm transition-opacity md:hidden ${
           sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setSidebarOpen(false)}
@@ -76,7 +76,7 @@ export default function Layout() {
 
         <div className="p-4">
           <div className="flex items-center space-x-3 mb-6 p-3 rounded-lg bg-[var(--bg-tertiary)]">
-            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-semibold">
+            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-600 dark:bg-primary-500 flex items-center justify-center text-white font-semibold">
               {user?.name?.charAt(0) || "U"}
             </div>
             <div className="flex-1 min-w-0">
@@ -168,7 +168,7 @@ export default function Layout() {
                   className="h-9 flex items-center space-x-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
-                  <div className="h-8 w-8 rounded-full bg-primary-600 flex items-center justify-center text-white font-semibold">
+                  <div className="h-8 w-8 rounded-full bg-primary-600 dark:bg-primary-500 flex items-center justify-center text-white font-semibold">
                     {user?.name?.charAt(0) || "U"}
                   </div>
                   <ChevronDownIcon className="h-5 w-5 text-[var(--text-tertiary)]" />
